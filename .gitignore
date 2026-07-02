@@ -1,0 +1,29 @@
+# ===================== IDE Eclipse 缓存文件 =====================
+.classpath
+.project
+.settings/
+bin/
+target/
+.c9
+*.swp
+
+# ===================== 本地数据库、日志、临时文件 =====================
+*.log
+*.err
+*.sqlbak
+*.dump
+
+# ===================== 系统缓存文件 =====================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ===================== 课设本地资料（不上传GitHub） =====================
+# 课程设计文档文件夹
+Document/
+# 数据库截图文件夹
+Screenshots/
+
+# ===================== 本地私有配置 =====================
+application-local.properties
+db-config.txt
