@@ -230,3 +230,260 @@ VALUES
 );
 
 
+/******************************************************************************
+ * 仓库信息表（warehouse）
+ *
+ * 功能说明：
+ *      保存仓库基本信息。
+ *
+ * 设计说明：
+ *      1. 一个仓库可存放多种货物。
+ *      2. 不保存库存数量，库存信息独立维护。
+ ******************************************************************************/
+
+CREATE TABLE warehouse
+(
+    warehouse_id INT AUTO_INCREMENT COMMENT '仓库ID',
+
+    warehouse_code VARCHAR(30)
+        NOT NULL
+        UNIQUE
+        COMMENT '仓库编号',
+
+    warehouse_name VARCHAR(50)
+        NOT NULL
+        COMMENT '仓库名称',
+
+    location VARCHAR(100)
+        NOT NULL
+        COMMENT '仓库位置',
+
+    capacity DECIMAL(12,2)
+        NOT NULL
+        DEFAULT 0
+        COMMENT '仓库容量',
+
+    manager VARCHAR(30)
+        COMMENT '负责人',
+
+    remark VARCHAR(200)
+        COMMENT '备注',
+
+    status TINYINT
+        NOT NULL
+        DEFAULT 1
+        COMMENT '状态',
+
+    create_time DATETIME
+        DEFAULT CURRENT_TIMESTAMP
+        COMMENT '创建时间',
+
+    update_time DATETIME
+        DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP
+        COMMENT '更新时间',
+
+    PRIMARY KEY (warehouse_id)
+
+)
+ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COMMENT='仓库信息表';
+
+
+/******************************************************************************
+ * 初始化仓库数据
+ ******************************************************************************/
+
+INSERT INTO warehouse
+(warehouse_code,warehouse_name,location,capacity,manager)
+
+VALUES
+
+('WH001','一号仓库','A区一层',5000,'张三'),
+
+('WH002','二号仓库','A区二层',8000,'李四'),
+
+('WH003','三号仓库','B区一层',10000,'王五');
+
+
+/******************************************************************************
+ * 货主信息表（owner）
+ *
+ * 功能说明：
+ *      保存货主基本信息。
+ *
+ * 设计说明：
+ *      1. 一个货主可拥有多种货物。
+ *      2. 敏感信息采用 AES 加密存储。
+ ******************************************************************************/
+
+CREATE TABLE owner
+(
+    owner_id INT AUTO_INCREMENT COMMENT '货主ID',
+
+    owner_name VARCHAR(255)
+        NOT NULL
+        COMMENT 'AES加密货主名称',
+
+    phone VARCHAR(255)
+        COMMENT 'AES加密联系电话',
+
+    email VARCHAR(255)
+        COMMENT 'AES加密邮箱',
+
+    address VARCHAR(255)
+        COMMENT 'AES加密联系地址',
+
+    remark VARCHAR(200)
+        COMMENT '备注',
+
+    status TINYINT
+        DEFAULT 1
+        COMMENT '状态',
+
+    create_time DATETIME
+        DEFAULT CURRENT_TIMESTAMP
+        COMMENT '创建时间',
+
+    update_time DATETIME
+        DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP
+        COMMENT '更新时间',
+
+    PRIMARY KEY(owner_id)
+
+)
+ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COMMENT='货主信息表';
+
+
+/******************************************************************************
+ * 商品分类表（goods_category）
+ *
+ * 功能说明：
+ *      保存商品分类信息。
+ *
+ * 设计说明：
+ *      一个分类包含多个商品。
+ ******************************************************************************/
+
+CREATE TABLE goods_category
+(
+    category_id INT AUTO_INCREMENT COMMENT '分类ID',
+
+    category_name VARCHAR(50)
+        NOT NULL
+        UNIQUE
+        COMMENT '分类名称',
+
+    description VARCHAR(200)
+        COMMENT '分类描述',
+
+    status TINYINT
+        DEFAULT 1
+        COMMENT '状态',
+
+    create_time DATETIME
+        DEFAULT CURRENT_TIMESTAMP
+        COMMENT '创建时间',
+
+    update_time DATETIME
+        DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP
+        COMMENT '更新时间',
+
+    PRIMARY KEY(category_id)
+
+)
+ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COMMENT='商品分类表';
+
+
+/******************************************************************************
+ * 初始化商品分类
+ ******************************************************************************/
+
+INSERT INTO goods_category
+(category_name,description)
+
+VALUES
+
+('办公用品','办公耗材'),
+
+('电子产品','电子设备'),
+
+('食品','食品饮料'),
+
+('机械设备','机械设备');
+
+
+/******************************************************************************
+ * 商品信息表（goods）
+ *
+ * 功能说明：
+ *      保存商品基础资料。
+ *
+ * 设计说明：
+ *      1. 保存商品静态信息。
+ *      2. 库存数量独立维护。
+ *      3. 当前价格保存在本表。
+ *      4. 历史价格保存在价格历史表。
+ ******************************************************************************/
+
+CREATE TABLE goods
+(
+    goods_id INT AUTO_INCREMENT COMMENT '商品ID',
+
+    goods_code VARCHAR(30)
+        NOT NULL
+        UNIQUE
+        COMMENT '商品编号',
+
+    goods_name VARCHAR(100)
+        NOT NULL
+        COMMENT '商品名称',
+
+    category_id INT
+        NOT NULL
+        COMMENT '分类ID',
+
+    specification VARCHAR(100)
+        COMMENT '规格型号',
+
+    unit VARCHAR(20)
+        NOT NULL
+        COMMENT '计量单位',
+
+    price DECIMAL(10,2)
+        NOT NULL
+        DEFAULT 0
+        COMMENT '当前单价',
+
+    status TINYINT
+        DEFAULT 1
+        COMMENT '状态',
+
+    create_time DATETIME
+        DEFAULT CURRENT_TIMESTAMP
+        COMMENT '创建时间',
+
+    update_time DATETIME
+        DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP
+        COMMENT '更新时间',
+
+    PRIMARY KEY(goods_id),
+
+    CONSTRAINT fk_goods_category
+        FOREIGN KEY(category_id)
+        REFERENCES goods_category(category_id)
+
+)
+ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COMMENT='商品信息表';
+
+
