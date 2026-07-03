@@ -487,3 +487,295 @@ DEFAULT CHARSET=utf8mb4
 COMMENT='商品信息表';
 
 
+/******************************************************************************
+ * 库存信息表（inventory）
+ *
+ * 功能说明：
+ *      保存各仓库商品库存信息。
+ *
+ * 设计说明：
+ *      1. 商品基础信息与库存信息分离。
+ *      2. 同一种商品可存放多个仓库。
+ *      3. 不同货主库存独立管理。
+ *      4. 支持库存预警。
+ ******************************************************************************/
+
+CREATE TABLE inventory
+(
+    inventory_id INT AUTO_INCREMENT COMMENT '库存ID',
+
+    goods_id INT
+        NOT NULL
+        COMMENT '商品ID',
+
+    warehouse_id INT
+        NOT NULL
+        COMMENT '仓库ID',
+
+    owner_id INT
+        NOT NULL
+        COMMENT '货主ID',
+
+    quantity INT
+        NOT NULL
+        DEFAULT 0
+        COMMENT '当前库存',
+
+    warning_quantity INT
+        NOT NULL
+        DEFAULT 20
+        COMMENT '库存预警值',
+
+    create_time DATETIME
+        DEFAULT CURRENT_TIMESTAMP
+        COMMENT '创建时间',
+
+    update_time DATETIME
+        DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP
+        COMMENT '更新时间',
+
+    PRIMARY KEY(inventory_id),
+
+    CONSTRAINT fk_inventory_goods
+        FOREIGN KEY(goods_id)
+        REFERENCES goods(goods_id),
+
+    CONSTRAINT fk_inventory_warehouse
+        FOREIGN KEY(warehouse_id)
+        REFERENCES warehouse(warehouse_id),
+
+    CONSTRAINT fk_inventory_owner
+        FOREIGN KEY(owner_id)
+        REFERENCES owner(owner_id),
+
+    -- 复合唯一键，防止同一商品在同一仓库同一货主下重复多条库存
+    UNIQUE(goods_id,warehouse_id,owner_id)
+
+)
+ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COMMENT='库存信息表';
+
+
+/******************************************************************************
+ * 商品价格历史表（goods_price_history）
+ *
+ * 功能说明：
+ *      保存商品历史价格信息。
+ *
+ * 设计说明：
+ *      每次商品价格调整时，
+ *      自动新增一条历史记录。
+ ******************************************************************************/
+
+CREATE TABLE goods_price_history
+(
+    history_id INT AUTO_INCREMENT COMMENT '历史记录ID',
+
+    goods_id INT
+        NOT NULL
+        COMMENT '商品ID',
+
+    old_price DECIMAL(10,2)
+        NOT NULL
+        COMMENT '原价格',
+
+    new_price DECIMAL(10,2)
+        NOT NULL
+        COMMENT '新价格',
+
+    update_user INT
+        NOT NULL
+        COMMENT '修改人',
+
+    update_time DATETIME
+        DEFAULT CURRENT_TIMESTAMP
+        COMMENT '修改时间',
+
+    PRIMARY KEY(history_id),
+
+    CONSTRAINT fk_history_goods
+        FOREIGN KEY(goods_id)
+        REFERENCES goods(goods_id),
+
+    CONSTRAINT fk_history_user
+        FOREIGN KEY(update_user)
+        REFERENCES sys_user(user_id)
+
+)
+ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COMMENT='商品价格历史表';
+
+
+/******************************************************************************
+ * 入库记录表（in_stock）
+ *
+ * 功能说明：
+ *      保存商品入库记录。
+ *
+ * 设计说明：
+ *      每次入库产生一条记录，
+ *      不允许修改历史记录。
+ ******************************************************************************/
+
+CREATE TABLE in_stock
+(
+    in_id INT AUTO_INCREMENT COMMENT '入库ID',
+
+    goods_id INT NOT NULL COMMENT '商品ID',
+
+    warehouse_id INT NOT NULL COMMENT '仓库ID',
+
+    owner_id INT NOT NULL COMMENT '货主ID',
+
+    quantity INT NOT NULL COMMENT '入库数量',
+
+    unit_price DECIMAL(10,2)
+        NOT NULL
+        COMMENT '入库单价',
+
+    total_amount DECIMAL(12,2)
+        NOT NULL
+        COMMENT '入库金额',
+
+    operator_id INT
+        NOT NULL
+        COMMENT '操作员',
+
+    in_time DATETIME
+        DEFAULT CURRENT_TIMESTAMP
+        COMMENT '入库时间',
+
+    remark VARCHAR(200)
+        COMMENT '备注',
+
+    PRIMARY KEY(in_id),
+
+    FOREIGN KEY(goods_id)
+        REFERENCES goods(goods_id),
+
+    FOREIGN KEY(owner_id)
+        REFERENCES owner(owner_id),
+
+    FOREIGN KEY(warehouse_id)
+        REFERENCES warehouse(warehouse_id),
+
+    FOREIGN KEY(operator_id)
+        REFERENCES sys_user(user_id)
+
+)
+ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COMMENT='入库记录表';
+
+
+/******************************************************************************
+ * 出库记录表（out_stock）
+ *
+ * 功能说明：
+ *      保存商品出库记录。
+ *
+ * 设计说明：
+ *      出库前必须检查库存数量。
+ *      库存不足禁止出库。
+ ******************************************************************************/
+
+CREATE TABLE out_stock
+(
+    out_id INT AUTO_INCREMENT COMMENT '出库ID',
+
+    goods_id INT NOT NULL COMMENT '商品ID',
+
+    warehouse_id INT NOT NULL COMMENT '仓库ID',
+
+    owner_id INT NOT NULL COMMENT '货主ID',
+
+    quantity INT NOT NULL COMMENT '出库数量',
+
+    unit_price DECIMAL(10,2)
+        NOT NULL
+        COMMENT '出库单价',
+
+    total_amount DECIMAL(12,2)
+        NOT NULL
+        COMMENT '出库金额',
+
+    operator_id INT
+        NOT NULL
+        COMMENT '操作员',
+
+    out_time DATETIME
+        DEFAULT CURRENT_TIMESTAMP
+        COMMENT '出库时间',
+
+    remark VARCHAR(200)
+        COMMENT '备注',
+
+    PRIMARY KEY(out_id),
+
+    FOREIGN KEY(goods_id)
+        REFERENCES goods(goods_id),
+
+    FOREIGN KEY(owner_id)
+        REFERENCES owner(owner_id),
+
+    FOREIGN KEY(warehouse_id)
+        REFERENCES warehouse(warehouse_id),
+
+    FOREIGN KEY(operator_id)
+        REFERENCES sys_user(user_id)
+
+)
+ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COMMENT='出库记录表';
+
+
+/******************************************************************************
+ * 系统操作日志表（operation_log）
+ *
+ * 功能说明：
+ *      保存系统关键业务操作日志。
+ *
+ * 设计说明：
+ *      记录所有重要操作，
+ *      便于系统审计与问题追踪。
+ ******************************************************************************/
+
+CREATE TABLE operation_log
+(
+    log_id INT AUTO_INCREMENT COMMENT '日志ID',
+
+    user_id INT
+        NOT NULL
+        COMMENT '操作用户',
+
+    operation_type VARCHAR(50)
+        NOT NULL
+        COMMENT '操作类型',
+
+    operation_content VARCHAR(500)
+        NOT NULL
+        COMMENT '操作内容',
+
+    ip_address VARCHAR(50)
+        COMMENT 'IP地址',
+
+    operation_time DATETIME
+        DEFAULT CURRENT_TIMESTAMP
+        COMMENT '操作时间',
+
+    PRIMARY KEY(log_id),
+
+    CONSTRAINT fk_log_user
+        FOREIGN KEY(user_id)
+        REFERENCES sys_user(user_id)
+
+)
+ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COMMENT='系统操作日志';
+
+
