@@ -779,3 +779,181 @@ DEFAULT CHARSET=utf8mb4
 COMMENT='系统操作日志';
 
 
+/******************************************************************************
+ * 数据库索引
+ *
+ * 功能说明：
+ *      为高频查询字段创建索引，提高查询效率。
+ ******************************************************************************/
+
+-- 商品名称
+CREATE INDEX idx_goods_name
+ON goods(goods_name);
+
+-- 仓库名称
+CREATE INDEX idx_warehouse_name
+ON warehouse(warehouse_name);
+
+-- 商品分类
+CREATE INDEX idx_goods_category
+ON goods(category_id);
+
+-- 入库时间
+CREATE INDEX idx_in_time
+ON in_stock(in_time);
+
+-- 出库时间
+CREATE INDEX idx_out_time
+ON out_stock(out_time);
+
+-- 库存查询
+CREATE INDEX idx_inventory_goods
+ON inventory(goods_id);
+
+CREATE INDEX idx_inventory_owner
+ON inventory(owner_id);
+
+CREATE INDEX idx_inventory_warehouse
+ON inventory(warehouse_id);
+
+
+/******************************************************************************
+ * 初始化货主数据
+ *
+ * 说明：
+ *      仍为占位符，Java 完成 AES 工具类后，初始化脚本会自动插入真实 AES 密文
+ ******************************************************************************/
+
+INSERT INTO owner
+(owner_name,phone,email,address)
+
+VALUES
+
+('TEMP_OWNER_AES_001',
+'TEMP_PHONE_AES_001',
+'TEMP_EMAIL_AES_001',
+'TEMP_ADDRESS_AES_001'),
+
+('TEMP_OWNER_AES_002',
+'TEMP_PHONE_AES_002',
+'TEMP_EMAIL_AES_002',
+'TEMP_ADDRESS_AES_002');
+
+
+/******************************************************************************
+ * 初始化商品数据
+ ******************************************************************************/
+
+INSERT INTO goods
+(
+goods_code,
+goods_name,
+category_id,
+specification,
+unit,
+price
+)
+
+VALUES
+
+('G001','A4打印纸',1,'70g/500张','箱',180),
+
+('G002','无线鼠标',2,'USB接口','个',65),
+
+('G003','方便面',3,'红烧牛肉味','箱',58),
+
+('G004','电钻',4,'800W','台',560);
+
+
+/******************************************************************************
+ * 初始化库存数据
+ ******************************************************************************/
+
+INSERT INTO inventory
+(
+goods_id,
+warehouse_id,
+owner_id,
+quantity,
+warning_quantity
+)
+
+VALUES
+
+(1,1,1,200,50),
+
+(2,1,2,100,20),
+
+(3,2,1,300,60),
+
+(4,3,2,80,15);
+
+
+/******************************************************************************
+ * 初始化价格历史
+ ******************************************************************************/
+
+INSERT INTO goods_price_history
+(
+goods_id,
+old_price,
+new_price,
+update_user
+)
+
+VALUES
+
+(1,170,180,1),
+
+(2,60,65,1),
+
+(3,55,58,1),
+
+(4,530,560,1);
+
+
+/******************************************************************************
+ * 数据完整性约束
+ ******************************************************************************/
+
+ALTER TABLE inventory
+ADD CONSTRAINT chk_inventory_quantity
+CHECK(quantity>=0);
+
+ALTER TABLE inventory
+ADD CONSTRAINT chk_warning_quantity
+CHECK(warning_quantity>=0);
+
+ALTER TABLE goods
+ADD CONSTRAINT chk_goods_price
+CHECK(price>=0);
+
+ALTER TABLE in_stock
+ADD CONSTRAINT chk_in_quantity
+CHECK(quantity>0);
+
+ALTER TABLE out_stock
+ADD CONSTRAINT chk_out_quantity
+CHECK(quantity>0);
+
+
+/******************************************************************************
+ * 数据库安全设计
+ *
+ * 1.用户密码采用 BCrypt 加密存储。
+ *
+ * 2.手机号、邮箱、货主名称、地址等敏感信息采用 AES 加密存储。
+ *
+ * 3.系统采用角色权限控制：
+ *      ADMIN
+ *      WAREHOUSE_ADMIN
+ *      STATISTICS
+ *
+ * 4.所有重要业务操作记录到 operation_log。
+ *
+ * 5.数据库采用外键约束保证数据一致性。
+ *
+ * 6.数据库采用 CHECK 约束保证数据合法性。
+ *
+ ******************************************************************************/
+ 
