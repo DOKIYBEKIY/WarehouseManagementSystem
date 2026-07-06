@@ -30,7 +30,7 @@
  * @note
  *      1. 数据库遵循第三范式（3NF）
  *      2. 用户密码采用 BCrypt 加密存储（由Java程序生成）
- *      3. 用户敏感数据采用 AES 加密存储（由Java程序加密）
+ *      3. 手机号、邮箱、联系地址等敏感数据采用 AES 加密存储（由 Java 程序加密）
  *      4. 支持库存预警
  *      5. 支持价格历史记录
  *      6. 支持完整出入库日志
@@ -263,8 +263,8 @@ CREATE TABLE warehouse
         DEFAULT 0
         COMMENT '仓库容量',
 
-    manager VARCHAR(30)
-        COMMENT '负责人',
+    manager_name VARCHAR(30)
+        COMMENT '仓库负责人',
 
     remark VARCHAR(200)
         COMMENT '备注',
@@ -296,7 +296,7 @@ COMMENT='仓库信息表';
  ******************************************************************************/
 
 INSERT INTO warehouse
-(warehouse_code,warehouse_name,location,capacity,manager)
+(warehouse_code,warehouse_name,location,capacity,manager_name)
 
 VALUES
 
@@ -315,16 +315,17 @@ VALUES
  *
  * 设计说明：
  *      1. 一个货主可拥有多种货物。
- *      2. 敏感信息采用 AES 加密存储。
+ *      2. 联系电话、邮箱、联系地址采用 AES 加密存储。
+ *      3. 货主名称采用明文保存，便于业务查询。
  ******************************************************************************/
 
 CREATE TABLE owner
 (
     owner_id INT AUTO_INCREMENT COMMENT '货主ID',
 
-    owner_name VARCHAR(255)
+    owner_name VARCHAR(100)
         NOT NULL
-        COMMENT 'AES加密货主名称',
+        COMMENT '货主名称',
 
     phone VARCHAR(255)
         COMMENT 'AES加密联系电话',
