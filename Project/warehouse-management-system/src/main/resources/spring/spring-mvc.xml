@@ -12,7 +12,7 @@
        https://www.springframework.org/schema/mvc/spring-mvc.xsd">
 
     <!-- 扫描Controller -->
-    <context:component-scan base-package="com.wms.controller"/>
+    <context:component-scan base-package="com.wms"/>
 
     <!-- 注解驱动 -->
     <mvc:annotation-driven/>
