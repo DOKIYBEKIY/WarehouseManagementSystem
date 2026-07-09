@@ -17,7 +17,7 @@ public interface GoodsCategoryMapper {
 
 
 
-    int insert(GoodsCategory category);
+    int add(GoodsCategory category);
 
 
 

@@ -5,12 +5,20 @@
 
 
 <h2>
-新增商品分类
+修改商品分类
 </h2>
 
 
+
 <form method="post"
-action="${pageContext.request.contextPath}/category/save">
+action="${pageContext.request.contextPath}/category/update">
+
+
+
+<input type="hidden"
+name="categoryId"
+value="${category.categoryId}">
+
 
 
 <p>
@@ -18,10 +26,11 @@ action="${pageContext.request.contextPath}/category/save">
 </p>
 
 
-<input 
+<input
 type="text"
 name="categoryName"
-required>
+value="${category.categoryName}">
+
 
 
 <br><br>
@@ -33,18 +42,20 @@ required>
 
 
 <textarea
-name="description">
-</textarea>
+name="description">${category.description}</textarea>
+
 
 
 <br><br>
 
 
+
 <button type="submit">
 
-保存
+保存修改
 
 </button>
+
 
 
 </form>

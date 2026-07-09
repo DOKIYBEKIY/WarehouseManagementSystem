@@ -15,13 +15,10 @@ public interface GoodsCategoryService {
     GoodsCategory findById(Integer id);
 
 
-
     void add(GoodsCategory category);
 
 
-
     void update(GoodsCategory category);
-
 
 
     void delete(Integer id);

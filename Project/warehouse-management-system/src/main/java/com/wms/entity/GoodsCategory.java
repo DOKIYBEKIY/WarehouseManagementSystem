@@ -36,6 +36,7 @@ public class GoodsCategory {
     }
 
 
+
     public String getCategoryName() {
         return categoryName;
     }
@@ -44,6 +45,7 @@ public class GoodsCategory {
     public void setCategoryName(String categoryName) {
         this.categoryName = categoryName;
     }
+
 
 
     public String getDescription() {
@@ -56,6 +58,7 @@ public class GoodsCategory {
     }
 
 
+
     public Integer getStatus() {
         return status;
     }
@@ -64,6 +67,7 @@ public class GoodsCategory {
     public void setStatus(Integer status) {
         this.status = status;
     }
+
 
 
     public Date getCreateTime() {
@@ -76,6 +80,7 @@ public class GoodsCategory {
     }
 
 
+
     public Date getUpdateTime() {
         return updateTime;
     }
@@ -84,4 +89,6 @@ public class GoodsCategory {
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
     }
+
+
 }
