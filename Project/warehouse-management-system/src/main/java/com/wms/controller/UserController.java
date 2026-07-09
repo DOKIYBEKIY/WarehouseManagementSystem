@@ -8,6 +8,7 @@ import com.wms.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 
 import javax.servlet.http.HttpSession;
@@ -29,7 +30,8 @@ public class UserController {
     public String login(
             @RequestParam String username,
             @RequestParam String password,
-            HttpSession session){
+            HttpSession session,
+            RedirectAttributes redirect) {
 
 
 
@@ -39,11 +41,9 @@ public class UserController {
                         password);
 
 
-        if(user == null){
-
-
+        if (user == null) {
+            redirect.addFlashAttribute("error", "账号或密码错误，请重试");
             return "redirect:/login.jsp";
-
         }
 
 
@@ -56,18 +56,18 @@ public class UserController {
 
 
 
-        Integer roleId=user.getRoleId();
+        Integer roleId = user.getRoleId();
 
 
-        if(Integer.valueOf(1).equals(roleId)){
+        if (Integer.valueOf(1).equals(roleId)) {
 
             return "redirect:/admin/home";
 
-        }else if(Integer.valueOf(2).equals(roleId)){
+        } else if (Integer.valueOf(2).equals(roleId)) {
 
             return "redirect:/warehouse/home";
 
-        }else{
+        } else {
 
             return "redirect:/query/home";
 
