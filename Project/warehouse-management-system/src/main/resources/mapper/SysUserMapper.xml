@@ -5,7 +5,25 @@
 <mapper namespace="com.wms.mapper.SysUserMapper">
 
     <select id="login" resultType="com.wms.entity.SysUser">
-        SELECT * FROM sys_user WHERE username = #{username} AND status = 1
+            SELECT
+
+	            user_id,
+	
+	            username,
+	
+	            password,
+	
+	            role_id,
+	
+	            status
+	
+	
+	        FROM sys_user
+	
+	
+	        WHERE username=#{username}
+	
+	        AND status=1
     </select>
 
 </mapper>

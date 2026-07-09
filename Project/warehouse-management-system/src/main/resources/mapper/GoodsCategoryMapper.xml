@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.wms.mapper.GoodsCategoryMapper">
+
+
+    <resultMap id="categoryMap"
+               type="com.wms.entity.GoodsCategory">
+
+
+        <id property="categoryId"
+            column="category_id"/>
+
+
+        <result property="categoryName"
+                column="category_name"/>
+
+
+        <result property="description"
+                column="description"/>
+
+
+        <result property="status"
+                column="status"/>
+
+
+        <result property="createTime"
+                column="create_time"/>
+
+
+        <result property="updateTime"
+                column="update_time"/>
+
+
+    </resultMap>
+
+
+
+    <!-- 查询全部 -->
+
+    <select id="findAll"
+            resultMap="categoryMap">
+
+
+        SELECT *
+
+        FROM goods_category
+
+
+        ORDER BY category_id DESC
+
+
+    </select>
+
+
+
+    <!-- 根据id查询 -->
+
+    <select id="findById"
+            resultMap="categoryMap">
+
+
+        SELECT *
+
+        FROM goods_category
+
+        WHERE category_id=#{id}
+
+
+    </select>
+
+
+
+    <!-- 新增 -->
+
+
+    <insert id="insert">
+
+
+        INSERT INTO goods_category
+        (
+            category_name,
+            description
+        )
+
+        VALUES
+        (
+            #{categoryName},
+            #{description}
+        )
+
+
+    </insert>
+
+
+
+    <!-- 修改 -->
+
+
+    <update id="update">
+
+
+        UPDATE goods_category
+
+
+        SET
+
+        category_name=#{categoryName},
+
+        description=#{description},
+
+        status=#{status}
+
+
+        WHERE category_id=#{categoryId}
+
+
+    </update>
+
+
+
+    <!-- 删除 -->
+
+
+    <delete id="delete">
+
+
+        DELETE FROM goods_category
+
+
+        WHERE category_id=#{id}
+
+
+    </delete>
+
+
+</mapper>
