@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wms.mapper.OwnerMapper">
+
+    <select id="findAll" resultType="com.wms.entity.Owner">
+        select * from owner where status=1 order by owner_id desc
+    </select>
+
+    <select id="findById" resultType="com.wms.entity.Owner">
+        select * from owner where owner_id=#{id}
+    </select>
+
+    <insert id="add">
+        insert into owner (owner_name, phone, email, address, remark, status)
+        values (#{ownerName}, #{phone}, #{email}, #{address}, #{remark}, 1)
+    </insert>
+
+    <update id="update">
+        update owner set owner_name=#{ownerName}, phone=#{phone}, email=#{email},
+        address=#{address}, remark=#{remark}, update_time=now()
+        where owner_id=#{ownerId}
+    </update>
+
+    <delete id="delete">
+        update owner set status=0 where owner_id=#{id}
+    </delete>
+
+    <update id="updateStatus">
+        update owner set status=#{status}, update_time=now() where owner_id=#{id}
+    </update>
+
+</mapper>

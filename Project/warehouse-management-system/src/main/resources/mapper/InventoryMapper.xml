@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wms.mapper.InventoryMapper">
+
+    <resultMap id="invMap" type="com.wms.entity.Inventory">
+        <id property="inventoryId" column="inventory_id"/>
+        <result property="goodsId" column="goods_id"/>
+        <result property="warehouseId" column="warehouse_id"/>
+        <result property="ownerId" column="owner_id"/>
+        <result property="quantity" column="quantity"/>
+        <result property="warningQuantity" column="warning_quantity"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <!-- 扩展字段 -->
+        <result property="goodsName" column="goods_name"/>
+        <result property="goodsCode" column="goods_code"/>
+        <result property="warehouseName" column="warehouse_name"/>
+        <result property="ownerName" column="owner_name"/>
+    </resultMap>
+
+    <select id="findAll" resultMap="invMap">
+        select i.*, g.goods_name, g.goods_code, w.warehouse_name, o.owner_name
+        from inventory i
+        left join goods g on i.goods_id=g.goods_id
+        left join warehouse w on i.warehouse_id=w.warehouse_id
+        left join owner o on i.owner_id=o.owner_id
+        where g.status=1
+        order by i.inventory_id desc
+    </select>
+
+    <select id="findByCondition" resultMap="invMap" parameterType="map">
+        select i.*, g.goods_name, g.goods_code, w.warehouse_name, o.owner_name
+        from inventory i
+        left join goods g on i.goods_id=g.goods_id
+        left join warehouse w on i.warehouse_id=w.warehouse_id
+        left join owner o on i.owner_id=o.owner_id
+        where 1=1
+        <if test="goodsName != null and goodsName != ''">
+            and g.goods_name like concat('%',#{goodsName},'%')
+        </if>
+        <if test="ownerName != null and ownerName != ''">
+            and o.owner_name like concat('%',#{ownerName},'%')
+        </if>
+        <if test="warehouseId != null">
+            and i.warehouse_id=#{warehouseId}
+        </if>
+        <if test="goodsId != null">
+            and i.goods_id=#{goodsId}
+        </if>
+        <if test="ownerId != null">
+            and i.owner_id=#{ownerId}
+        </if>
+        order by i.inventory_id desc
+    </select>
+
+    <select id="findByGoodsWarehouseOwner" resultMap="invMap">
+        select i.*, g.goods_name, g.goods_code, w.warehouse_name, o.owner_name
+        from inventory i
+        left join goods g on i.goods_id=g.goods_id
+        left join warehouse w on i.warehouse_id=w.warehouse_id
+        left join owner o on i.owner_id=o.owner_id
+        where i.goods_id=#{goodsId} and i.warehouse_id=#{warehouseId} and i.owner_id=#{ownerId}
+        limit 1
+    </select>
+
+    <update id="increaseQuantity">
+        update inventory set quantity=quantity+#{quantity}, update_time=now()
+        where goods_id=#{goodsId} and warehouse_id=#{warehouseId} and owner_id=#{ownerId}
+    </update>
+
+    <update id="decreaseQuantity">
+        update inventory set quantity=quantity-#{quantity}, update_time=now()
+        where goods_id=#{goodsId} and warehouse_id=#{warehouseId} and owner_id=#{ownerId}
+        and quantity >= #{quantity}
+    </update>
+
+    <insert id="insert">
+        insert into inventory (goods_id, warehouse_id, owner_id, quantity, warning_quantity)
+        values (#{goodsId}, #{warehouseId}, #{ownerId}, #{quantity}, #{warningQuantity})
+    </insert>
+
+    <select id="findWarning" resultMap="invMap">
+        select i.*, g.goods_name, g.goods_code, w.warehouse_name, o.owner_name
+        from inventory i
+        left join goods g on i.goods_id=g.goods_id
+        left join warehouse w on i.warehouse_id=w.warehouse_id
+        left join owner o on i.owner_id=o.owner_id
+        where i.quantity &lt;= i.warning_quantity
+        and g.status=1
+        order by i.quantity asc
+    </select>
+
+    <select id="findByWarehouse" resultMap="invMap">
+        select i.*, g.goods_name, g.goods_code, w.warehouse_name, o.owner_name
+        from inventory i
+        left join goods g on i.goods_id=g.goods_id
+        left join warehouse w on i.warehouse_id=w.warehouse_id
+        left join owner o on i.owner_id=o.owner_id
+        where i.warehouse_id=#{warehouseId}
+        order by i.inventory_id desc
+    </select>
+
+    <select id="findByOwner" resultMap="invMap">
+        select i.*, g.goods_name, g.goods_code, w.warehouse_name, o.owner_name
+        from inventory i
+        left join goods g on i.goods_id=g.goods_id
+        left join warehouse w on i.warehouse_id=w.warehouse_id
+        left join owner o on i.owner_id=o.owner_id
+        where i.owner_id=#{ownerId}
+        order by i.inventory_id desc
+    </select>
+
+</mapper>

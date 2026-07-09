@@ -201,33 +201,47 @@ COMMENT='系统用户表';
  * 初始化管理员账号
  *
  * 说明：
- *      此处先使用占位值，真正的 BCrypt 密码等登录模块完成后由 Java 自动生成并更新。
+ *      密码采用 BCrypt 加密存储（明文均为 admin123）。
+ *      后续可通过系统用户管理界面新增或修改。
  ******************************************************************************/
 
 INSERT INTO sys_user
-(
-username,
-password,
-real_name,
-phone,
-email,
-role_id
-)
-
+(username, password, real_name, phone, email, role_id)
 VALUES
-(
-'admin',
-
-'TEMP_BCRYPT_PASSWORD',
-
+('admin',
+'$2a$10$ZrKz9VSaHEoleDq2zkbmfOL5JO0nM1H6H.u.nBIM7Y2djef2kpm8q',
 '系统管理员',
-
 'TEMP_AES_PHONE',
-
 'TEMP_AES_EMAIL',
+1);
 
-1
-);
+
+/******************************************************************************
+ * 初始化测试账号
+ *
+ * 说明：
+ *      warehouse：仓库管理员（role_id=2）
+ *      query：统计员（role_id=3）
+ *      密码均为 admin123
+ ******************************************************************************/
+
+INSERT INTO sys_user
+(username, password, real_name, phone, email, role_id)
+VALUES
+
+('warehouse',
+'$2a$10$ZrKz9VSaHEoleDq2zkbmfOL5JO0nM1H6H.u.nBIM7Y2djef2kpm8q',
+'仓库管理员',
+'TEMP_AES_PHONE',
+'TEMP_AES_EMAIL',
+2),
+
+('query',
+'$2a$10$ZrKz9VSaHEoleDq2zkbmfOL5JO0nM1H6H.u.nBIM7Y2djef2kpm8q',
+'统计员',
+'TEMP_AES_PHONE',
+'TEMP_AES_EMAIL',
+3);
 
 
 /******************************************************************************

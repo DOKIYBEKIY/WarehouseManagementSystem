@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wms.mapper.OperationLogMapper">
+
+    <resultMap id="logMap" type="com.wms.entity.OperationLog">
+        <id property="logId" column="log_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="operationType" column="operation_type"/>
+        <result property="operationContent" column="operation_content"/>
+        <result property="ipAddress" column="ip_address"/>
+        <result property="operationTime" column="operation_time"/>
+        <result property="username" column="username"/>
+    </resultMap>
+
+    <insert id="insert">
+        insert into operation_log (user_id, operation_type, operation_content, ip_address)
+        values (#{userId}, #{operationType}, #{operationContent}, #{ipAddress})
+    </insert>
+
+    <select id="findAll" resultMap="logMap">
+        select l.*, u.username
+        from operation_log l
+        left join sys_user u on l.user_id=u.user_id
+        order by l.operation_time desc
+    </select>
+
+    <select id="findByUserId" resultMap="logMap">
+        select l.*, u.username
+        from operation_log l
+        left join sys_user u on l.user_id=u.user_id
+        where l.user_id=#{userId}
+        order by l.operation_time desc
+    </select>
+
+</mapper>

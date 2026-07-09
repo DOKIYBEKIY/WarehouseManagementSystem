@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wms.mapper.InStockMapper">
+
+    <resultMap id="inMap" type="com.wms.entity.InStock">
+        <id property="inId" column="in_id"/>
+        <result property="goodsId" column="goods_id"/>
+        <result property="warehouseId" column="warehouse_id"/>
+        <result property="ownerId" column="owner_id"/>
+        <result property="quantity" column="quantity"/>
+        <result property="unitPrice" column="unit_price"/>
+        <result property="totalAmount" column="total_amount"/>
+        <result property="operatorId" column="operator_id"/>
+        <result property="inTime" column="in_time"/>
+        <result property="remark" column="remark"/>
+        <result property="goodsName" column="goods_name"/>
+        <result property="goodsCode" column="goods_code"/>
+        <result property="warehouseName" column="warehouse_name"/>
+        <result property="ownerName" column="owner_name"/>
+        <result property="operatorName" column="operator_name"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.wms.entity.InStock">
+        insert into in_stock (goods_id, warehouse_id, owner_id, quantity, unit_price, total_amount, operator_id, in_time, remark)
+        values (#{goodsId}, #{warehouseId}, #{ownerId}, #{quantity}, #{unitPrice}, #{totalAmount}, #{operatorId}, #{inTime}, #{remark})
+    </insert>
+
+    <select id="findAll" resultMap="inMap">
+        select s.*, g.goods_name, g.goods_code, w.warehouse_name, o.owner_name, u.real_name as operator_name
+        from in_stock s
+        left join goods g on s.goods_id=g.goods_id
+        left join warehouse w on s.warehouse_id=w.warehouse_id
+        left join owner o on s.owner_id=o.owner_id
+        left join sys_user u on s.operator_id=u.user_id
+        order by s.in_time desc
+    </select>
+
+    <select id="findById" resultMap="inMap">
+        select s.*, g.goods_name, g.goods_code, w.warehouse_name, o.owner_name, u.real_name as operator_name
+        from in_stock s
+        left join goods g on s.goods_id=g.goods_id
+        left join warehouse w on s.warehouse_id=w.warehouse_id
+        left join owner o on s.owner_id=o.owner_id
+        left join sys_user u on s.operator_id=u.user_id
+        where s.in_id=#{id}
+    </select>
+
+    <select id="findByCondition" resultMap="inMap" parameterType="map">
+        select s.*, g.goods_name, g.goods_code, w.warehouse_name, o.owner_name, u.real_name as operator_name
+        from in_stock s
+        left join goods g on s.goods_id=g.goods_id
+        left join warehouse w on s.warehouse_id=w.warehouse_id
+        left join owner o on s.owner_id=o.owner_id
+        left join sys_user u on s.operator_id=u.user_id
+        where 1=1
+        <if test="goodsName != null and goodsName != ''">
+            and g.goods_name like concat('%',#{goodsName},'%')
+        </if>
+        <if test="categoryId != null">
+            and g.category_id=#{categoryId}
+        </if>
+        <if test="startTime != null and startTime != ''">
+            and s.in_time &gt;= #{startTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            and s.in_time &lt;= #{endTime}
+        </if>
+        order by s.in_time desc
+    </select>
+
+    <select id="statistics" resultType="map" parameterType="map">
+        select
+        <choose>
+            <when test='type == "year"'>
+                YEAR(s.in_time) as period,
+            </when>
+            <when test='type == "quarter"'>
+                CONCAT(YEAR(s.in_time), '-Q', QUARTER(s.in_time)) as period,
+            </when>
+            <when test='type == "month"'>
+                DATE_FORMAT(s.in_time, '%Y-%m') as period,
+            </when>
+            <otherwise>
+                DATE_FORMAT(s.in_time, '%Y-%m') as period,
+            </otherwise>
+        </choose>
+        SUM(s.quantity) as total_quantity,
+        SUM(s.total_amount) as total_amount,
+        COUNT(*) as record_count
+        from in_stock s
+        left join goods g on s.goods_id=g.goods_id
+        where 1=1
+        <if test="goodsName != null and goodsName != ''">
+            and g.goods_name like concat('%',#{goodsName},'%')
+        </if>
+        <if test="categoryId != null">
+            and g.category_id=#{categoryId}
+        </if>
+        <if test="startTime != null and startTime != ''">
+            and s.in_time &gt;= #{startTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            and s.in_time &lt;= #{endTime}
+        </if>
+        group by period
+        order by period desc
+    </select>
+
+</mapper>

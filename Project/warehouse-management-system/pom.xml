@@ -10,7 +10,6 @@
   <packaging>war</packaging>
 
   <name>warehouse-management-system Maven Webapp</name>
-  <!-- FIXME change it to the project's website -->
   <url>http://www.example.com</url>
 
   <properties>
@@ -19,7 +18,7 @@
     <maven.compiler.target>17</maven.compiler.target>
   </properties>
 
-<dependencies>
+  <dependencies>
 
     <!-- Servlet API -->
     <dependency>
@@ -70,47 +69,59 @@
         <artifactId>jstl</artifactId>
         <version>1.2</version>
     </dependency>
-    
-    <!-- Druid连接池 -->
-	<dependency>
-	    <groupId>com.alibaba</groupId>
-	    <artifactId>druid</artifactId>
-	    <version>1.2.20</version>
-	</dependency>
-	
-	<!-- Spring JDBC -->
-	<dependency>
-	    <groupId>org.springframework</groupId>
-	    <artifactId>spring-jdbc</artifactId>
-	    <version>5.3.33</version>
-	</dependency>
-	
-	<!-- Spring TX（事务管理） -->
-	<dependency>
-	    <groupId>org.springframework</groupId>
-	    <artifactId>spring-tx</artifactId>
-	    <version>5.3.33</version>
-	</dependency>
-	
-	<!-- Spring AOP（MyBatis代理必须） -->
-	<dependency>
-	    <groupId>org.springframework</groupId>
-	    <artifactId>spring-aop</artifactId>
-	    <version>5.3.33</version>
-	</dependency>
-	
 
-</dependencies>
+    <!-- Druid连接池 -->
+    <dependency>
+        <groupId>com.alibaba</groupId>
+        <artifactId>druid</artifactId>
+        <version>1.2.20</version>
+    </dependency>
+
+    <!-- Spring JDBC -->
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-jdbc</artifactId>
+        <version>5.3.33</version>
+    </dependency>
+
+    <!-- Spring TX（事务管理） -->
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-tx</artifactId>
+        <version>5.3.33</version>
+    </dependency>
+
+    <!-- Spring AOP（MyBatis代理必须） -->
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-aop</artifactId>
+        <version>5.3.33</version>
+    </dependency>
+
+    <!-- BCrypt密码加密 -->
+    <dependency>
+        <groupId>org.mindrot</groupId>
+        <artifactId>jbcrypt</artifactId>
+        <version>0.4</version>
+    </dependency>
+
+    <!-- Apache Commons Codec（AES加密辅助） -->
+    <dependency>
+        <groupId>commons-codec</groupId>
+        <artifactId>commons-codec</artifactId>
+        <version>1.16.0</version>
+    </dependency>
+
+  </dependencies>
 
   <build>
     <finalName>warehouse-management-system</finalName>
-    <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
+    <pluginManagement>
       <plugins>
         <plugin>
           <artifactId>maven-clean-plugin</artifactId>
           <version>3.4.0</version>
         </plugin>
-        <!-- see http://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_war_packaging -->
         <plugin>
           <artifactId>maven-resources-plugin</artifactId>
           <version>3.3.1</version>

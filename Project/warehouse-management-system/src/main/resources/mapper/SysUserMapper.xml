@@ -4,26 +4,58 @@
 
 <mapper namespace="com.wms.mapper.SysUserMapper">
 
-    <select id="login" resultType="com.wms.entity.SysUser">
-            SELECT
+    <resultMap id="userMap" type="com.wms.entity.SysUser">
+        <id property="userId" column="user_id"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="realName" column="real_name"/>
+        <result property="phone" column="phone"/>
+        <result property="email" column="email"/>
+        <result property="roleId" column="role_id"/>
+        <result property="status" column="status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
 
-	            user_id,
-	
-	            username,
-	
-	            password,
-	
-	            role_id,
-	
-	            status
-	
-	
-	        FROM sys_user
-	
-	
-	        WHERE username=#{username}
-	
-	        AND status=1
+    <select id="login" resultMap="userMap">
+        SELECT user_id, username, password, real_name, role_id, status
+        FROM sys_user
+        WHERE username=#{username} AND status=1
     </select>
+
+    <select id="findAll" resultMap="userMap">
+        SELECT u.*, r.role_name
+        FROM sys_user u
+        LEFT JOIN sys_role r ON u.role_id=r.role_id
+        ORDER BY u.user_id DESC
+    </select>
+
+    <select id="findById" resultMap="userMap">
+        SELECT * FROM sys_user WHERE user_id=#{id}
+    </select>
+
+    <insert id="add">
+        INSERT INTO sys_user (username, password, real_name, phone, email, role_id, status)
+        VALUES (#{username}, #{password}, #{realName}, #{phone}, #{email}, #{roleId}, 1)
+    </insert>
+
+    <update id="update">
+        UPDATE sys_user SET
+        real_name=#{realName}, phone=#{phone}, email=#{email},
+        role_id=#{roleId}, update_time=now()
+        WHERE user_id=#{userId}
+    </update>
+
+    <delete id="delete">
+        UPDATE sys_user SET status=0, update_time=now() WHERE user_id=#{id}
+    </delete>
+
+    <update id="updateStatus">
+        UPDATE sys_user SET status=#{status}, update_time=now() WHERE user_id=#{id}
+    </update>
+
+    <update id="updatePassword">
+        UPDATE sys_user SET password=#{password}, update_time=now() WHERE user_id=#{id}
+    </update>
 
 </mapper>

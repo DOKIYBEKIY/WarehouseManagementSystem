@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wms.mapper.GoodsPriceHistoryMapper">
+
+    <resultMap id="historyMap" type="com.wms.entity.GoodsPriceHistory">
+        <id property="historyId" column="history_id"/>
+        <result property="goodsId" column="goods_id"/>
+        <result property="oldPrice" column="old_price"/>
+        <result property="newPrice" column="new_price"/>
+        <result property="updateUser" column="update_user"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="updateUserName" column="update_user_name"/>
+        <result property="goodsName" column="goods_name"/>
+    </resultMap>
+
+    <insert id="insert">
+        insert into goods_price_history (goods_id, old_price, new_price, update_user)
+        values (#{goodsId}, #{oldPrice}, #{newPrice}, #{updateUser})
+    </insert>
+
+    <select id="findByGoodsId" resultMap="historyMap">
+        select h.*, u.real_name as update_user_name, g.goods_name
+        from goods_price_history h
+        left join sys_user u on h.update_user=u.user_id
+        left join goods g on h.goods_id=g.goods_id
+        where h.goods_id=#{goodsId}
+        order by h.update_time desc
+    </select>
+
+    <select id="findAll" resultMap="historyMap">
+        select h.*, u.real_name as update_user_name, g.goods_name
+        from goods_price_history h
+        left join sys_user u on h.update_user=u.user_id
+        left join goods g on h.goods_id=g.goods_id
+        order by h.update_time desc
+    </select>
+
+</mapper>
