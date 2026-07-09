@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
-
+<%@ taglib prefix="c"
+uri="http://java.sun.com/jsp/jstl/core" %>
 
 
 <div class="card">
@@ -42,10 +43,35 @@ action="${pageContext.request.contextPath}/goods/save">
 
 
 <p>
-分类ID：
+商品分类：
 </p>
 
-<input name="categoryId">
+
+<select name="categoryId">
+
+
+<option value="">
+请选择分类
+</option>
+
+
+
+<c:forEach
+items="${categoryList}"
+var="cat">
+
+
+<option value="${cat.categoryId}">
+
+${cat.categoryName}
+
+</option>
+
+
+</c:forEach>
+
+
+</select>
 
 
 

@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
-
+<%@ taglib prefix="c"
+uri="http://java.sun.com/jsp/jstl/core" %>
 
 
 <div class="card">
@@ -54,12 +55,36 @@ value="${goods.goodsName}">
 
 
 <p>
-分类ID：
+商品分类：
 </p>
 
 
-<input name="categoryId"
-value="${goods.categoryId}">
+<select name="categoryId">
+
+
+<c:forEach
+items="${categoryList}"
+var="cat">
+
+
+<option 
+value="${cat.categoryId}"
+<c:if test="${cat.categoryId==goods.categoryId}">
+selected
+</c:if>
+>
+
+
+${cat.categoryName}
+
+
+</option>
+
+
+</c:forEach>
+
+
+</select>
 
 
 

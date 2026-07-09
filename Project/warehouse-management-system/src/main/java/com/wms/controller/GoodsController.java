@@ -2,6 +2,7 @@ package com.wms.controller;
 
 
 import com.wms.entity.Goods;
+import com.wms.service.GoodsCategoryService;
 import com.wms.service.GoodsService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,9 @@ public class GoodsController {
 
     @Autowired
     private GoodsService service;
+    
+    @Autowired
+    private GoodsCategoryService categoryService;
 
 
 
@@ -76,6 +80,12 @@ public class GoodsController {
         model.addAttribute(
                 "goods",
                 new Goods()
+        );
+
+
+        model.addAttribute(
+                "categoryList",
+                categoryService.findAll()
         );
 
 
@@ -142,6 +152,12 @@ public class GoodsController {
         model.addAttribute(
                 "goods",
                 goods
+        );
+
+
+        model.addAttribute(
+                "categoryList",
+                categoryService.findAll()
         );
 
 
